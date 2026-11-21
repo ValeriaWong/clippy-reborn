@@ -1,0 +1,6 @@
+# Clippy Reborn — .gitignore
+# NOTE: .kiro must NEVER be ignored. Kiroween 2026 requires the /.kiro
+# directory at the repo root; a repo without it risks disqualification.
+node_modules/
+.DS_Store
+*.log

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Pip — character preview (Clippy Reborn)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .preview { max-width: 880px; margin: 0 auto; padding: 24px 16px 64px; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color: #222; }
+  .preview h1 { font-size: 24px; margin: 0 0 8px; }
+  .preview p { color: #555; line-height: 1.6; }
+  .preview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 24px 0; }
+  .preview-card { border: 1px solid #ddd; border-radius: 12px; padding: 16px 8px 8px; text-align: center; background: #fff; }
+  .preview-card h2 { font-size: 14px; margin: 12px 0 4px; }
+  .preview-card p { font-size: 12px; margin: 0 0 8px; }
+  .preview-pip { display: flex; justify-content: center; min-height: 140px; align-items: center; }
+  .preview-edge { width: 140px; height: 150px; margin: 0 auto; overflow: hidden; border-left: 2px dashed #bbb; position: relative; }
+  .preview-edge .pip-figure { position: absolute; right: 0; top: 6px; }
+  .preview-interactive { border: 1px solid #ddd; border-radius: 12px; padding: 16px; background: #fbfaf7; }
+  .preview-interactive h2 { font-size: 16px; margin: 0 0 12px; }
+  .preview-demo-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+  .preview-demo-row .pip-dock { position: static; }
+  .preview-buttons { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .preview-buttons button { border: 1px solid #999; background: #fff; border-radius: 999px; padding: 6px 14px; cursor: pointer; font-size: 13px; }
+  .preview-buttons button:hover { background: #eee; }
+  .preview-note { font-size: 13px; }
+</style>
+</head>
+<body>
+<main class="preview">
+  <h1>Pip — character preview</h1>
+  <p>Original paperclip, drawn from scratch as inline SVG (brushed steel + copper tail, dot eyes that look at the document, never at the user). No Microsoft artwork, no raster images. Animations are CSS/SVG only and respect <code>prefers-reduced-motion</code>.</p>
+
+  <section class="preview-grid">
+    <div class="preview-card pip-state-idle">
+      <div class="preview-pip">
+        <svg class="pip-svg" viewBox="0 0 120 170" width="96" height="136" role="img" aria-label="Pip, idle">
+          <defs>
+            <linearGradient id="steel-a" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#eef1f5"/><stop offset="0.45" stop-color="#bcc4cf"/><stop offset="0.55" stop-color="#8b96a3"/><stop offset="1" stop-color="#ccd3dc"/></linearGradient>
+            <linearGradient id="copper-a" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#eda978"/><stop offset="1" stop-color="#b26a33"/></linearGradient>
+          </defs>
+          <g class="pip-arms">
+            <g class="pip-arm pip-arm-left"><path d="M36 88 C28 92 22 98 18 106" fill="none" stroke="url(#steel-a)" stroke-width="4.5" stroke-linecap="round"/><circle cx="18" cy="106" r="3.2" fill="#8b96a3"/></g>
+            <g class="pip-arm pip-arm-right"><path d="M88 88 C96 92 102 98 106 106" fill="none" stroke="url(#steel-a)" stroke-width="4.5" stroke-linecap="round"/><circle cx="106" cy="106" r="3.2" fill="#8b96a3"/></g>
+          </g>
+          <path class="pip-wire" d="M86 30 C86 16 72 8 58 10 C40 13 32 28 33 48 L35 116 C36 136 50 148 66 146 C82 144 90 130 89 110 L86 62 C85 50 76 44 68 48 C60 52 60 66 61 84 L64 112 C65 122 74 126 79 119" fill="none" stroke="url(#steel-a)" stroke-width="8" stroke-linecap="round"/>
+          <path d="M61 84 L64 112 C65 122 74 126 79 119" fill="none" stroke="url(#copper-a)" stroke-width="8" stroke-linecap="round"/>
+          <g class="pip-eyes"><circle cx="44" cy="40" r="4.6" fill="#26292e"/><circle cx="58" cy="38" r="4.6" fill="#26292e"/><circle cx="42.4" cy="41.6" r="1.5" fill="#ffffff"/><circle cx="56.4" cy="39.6" r="1.5" fill="#ffffff"/></g>
+          <path class="pip-smile" d="M44 52 Q51 59 58 52" fill="none" stroke="#26292e" stroke-width="3" stroke-linecap="round"/>
+          <path class="pip-sweat" d="M84 22 c-4.5 6.5 -4.5 11 0 11 c4.5 0 4.5 -4.5 0 -11 z" fill="#7fb3d5"/>
+        </svg>
+      </div>
+      <h2>Idle</h2><p>Gentle bob. Waiting, not interrupting.</p>
+    </div>
+
+    <div class="preview-card pip-state-thinking">
+      <div class="preview-pip">
+        <svg class="pip-svg" viewBox="0 0 120 170" width="96" height="136" role="img" aria-label="Pip, thinking">
+          <defs>
+            <linearGradient id="steel-b" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#eef1f5"/><stop offset="0.45" stop-color="#bcc4cf"/><stop offset="0.55" stop-color="#8b96a3"/><stop offset="1" stop-color="#ccd3dc"/></linearGradient>
+            <linearGradient id="copper-b" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#eda978"/><stop offset="1" stop-color="#b26a33"/></linearGradient>
+          </defs>
+          <g class="pip-arms">
+            <g class="pip-arm pip-arm-left"><path d="M36 88 C28 92 22 98 18 106" fill="none" stroke="url(#steel-b)" stroke-width="4.5" stroke-linecap="round"/><circle cx="18" cy="106" r="3.2" fill="#8b96a3"/></g>
+            <g class="pip-arm pip-arm-right"><path d="M88 88 C96 92 102 98 106 106" fill="none" stroke="url(#steel-b)" stroke-width="4.5" stroke-linecap="round"/><circle cx="106" cy="106" r="3.2" fill="#8b96a3"/></g>
+          </g>
+          <path class="pip-wire" d="M86 30 C86 16 72 8 58 10 C40 13 32 28 33 48 L35 116 C36 136 50 148 66 146 C82 144 90 130 89 110 L86 62 C85 50 76 44 68 48 C60 52 60 66 61 84 L64 112 C65 122 74 126 79 119" fill="none" stroke="url(#steel-b)" stroke-width="8" stroke-linecap="round"/>
+          <path d="M61 84 L64 112 C65 122 74 126 79 119" fill="none" stroke="url(#copper-b)" stroke-width="8" stroke-linecap="round"/>
+          <g class="pip-eyes"><circle cx="44" cy="40" r="4.6" fill="#26292e"/><circle cx="58" cy="38" r="4.6" fill="#26292e"/><circle cx="42.4" cy="41.6" r="1.5" fill="#ffffff"/><circle cx="56.4" cy="39.6" r="1.5" fill="#ffffff"/></g>
+          <path class="pip-smile" d="M44 52 Q51 59 58 52" fill="none" stroke="#26292e" stroke-width="3" stroke-linecap="round"/>
+          <path class="pip-sweat" d="M84 22 c-4.5 6.5 -4.5 11 0 11 c4.5 0 4.5 -4.5 0 -11 z" fill="#7fb3d5"/>
+        </svg>
+      </div>
+      <h2>Thinking</h2><p>Small wiggle while the AI works.</p>
+    </div>
+
+    <div class="preview-card pip-state-success">
+      <div class="preview-pip">
+        <svg class="pip-svg" viewBox="0 0 120 170" width="96" height="136" role="img" aria-label="Pip, success">
+          <defs>
+            <linearGradient id="steel-c" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#eef1f5"/><stop offset="0.45" stop-color="#bcc4cf"/><stop offset="0.55" stop-color="#8b96a3"/><stop offset="1" stop-color="#ccd3dc"/></linearGradient>
+            <linearGradient id="copper-c" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#eda978"/><stop offset="1" stop-color="#b26a33"/></linearGradient>
+          </defs>
+          <g class="pip-arms">
+            <g class="pip-arm pip-arm-left"><path d="M36 88 C28 92 22 98 18 106" fill="none" stroke="url(#steel-c)" stroke-width="4.5" stroke-linecap="round"/><circle cx="18" cy="106" r="3.2" fill="#8b96a3"/></g>
+            <g class="pip-arm pip-arm-right"><path d="M88 88 C96 92 102 98 106 106" fill="none" stroke="url(#steel-c)" stroke-width="4.5" stroke-linecap="round"/><circle cx="106" cy="106" r="3.2" fill="#8b96a3"/></g>
+          </g>
+          <path class="pip-wire" d="M86 30 C86 16 72 8 58 10 C40 13 32 28 33 48 L35 116 C36 136 50 148 66 146 C82 144 90 130 89 110 L86 62 C85 50 76 44 68 48 C60 52 60 66 61 84 L64 112 C65 122 74 126 79 119" fill="none" stroke="url(#steel-c)" stroke-width="8" stroke-linecap="round"/>
+          <path d="M61 84 L64 112 C65 122 74 126 79 119" fill="none" stroke="url(#copper-c)" stroke-width="8" stroke-linecap="round"/>
+          <g class="pip-eyes"><circle cx="44" cy="40" r="4.6" fill="#26292e"/><circle cx="58" cy="38" r="4.6" fill="#26292e"/><circle cx="42.4" cy="41.6" r="1.5" fill="#ffffff"/><circle cx="56.4" cy="39.6" r="1.5" fill="#ffffff"/></g>
+          <path class="pip-smile" d="M44 52 Q51 59 58 52" fill="none" stroke="#26292e" stroke-width="3" stroke-linecap="round"/>
+          <path class="pip-sweat" d="M84 22 c-4.5 6.5 -4.5 11 0 11 c4.5 0 4.5 -4.5 0 -11 z" fill="#7fb3d5"/>
+        </svg>
+      </div>
+      <h2>Success</h2><p>Smile appears; small happy bounce.</p>
+    </div>
+
+    <div class="preview-card pip-state-apologetic">
+      <div class="preview-pip">
+        <svg class="pip-svg" viewBox="0 0 120 170" width="96" height="136" role="img" aria-label="Pip, apologetic">
+          <defs>
+            <linearGradient id="steel-d" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#eef1f5"/><stop offset="0.45" stop-color="#bcc4cf"/><stop offset="0.55" stop-color="#8b96a3"/><stop offset="1" stop-color="#ccd3dc"/></linearGradient>
+            <linearGradient id="copper-d" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#eda978"/><stop offset="1" stop-color="#b26a33"/></linearGradient>
+          </defs>
+          <g class="pip-arms">
+            <g class="pip-arm pip-arm-left"><path d="M36 88 C28 92 22 98 18 106" fill="none" stroke="url(#steel-d)" stroke-width="4.5" stroke-linecap="round"/><circle cx="18" cy="106" r="3.2" fill="#8b96a3"/></g>
+            <g class="pip-arm pip-arm-right"><path d="M88 88 C96 92 102 98 106 106" fill="none" stroke="url(#steel-d)" stroke-width="4.5" stroke-linecap="round"/><circle cx="106" cy="106" r="3.2" fill="#8b96a3"/></g>
+          </g>
+          <path class="pip-wire" d="M86 30 C86 16 72 8 58 10 C40 13 32 28 33 48 L35 116 C36 136 50 148 66 146 C82 144 90 130 89 110 L86 62 C85 50 76 44 68 48 C60 52 60 66 61 84 L64 112 C65 122 74 126 79 119" fill="none" stroke="url(#steel-d)" stroke-width="8" stroke-linecap="round"/>
+          <path d="M61 84 L64 112 C65 122 74 126 79 119" fill="none" stroke="url(#copper-d)" stroke-width="8" stroke-linecap="round"/>
+          <g class="pip-eyes"><circle cx="44" cy="40" r="4.6" fill="#26292e"/><circle cx="58" cy="38" r="4.6" fill="#26292e"/><circle cx="42.4" cy="41.6" r="1.5" fill="#ffffff"/><circle cx="56.4" cy="39.6" r="1.5" fill="#ffffff"/></g>
+          <path class="pip-smile" d="M44 52 Q51 59 58 52" fill="none" stroke="#26292e" stroke-width="3" stroke-linecap="round"/>
+          <path class="pip-sweat" d="M84 22 c-4.5 6.5 -4.5 11 0 11 c4.5 0 4.5 -4.5 0 -11 z" fill="#7fb3d5"/>
+        </svg>
+      </div>
+      <h2>Apologetic</h2><p>Slump + sweat drop when something fails.</p>
+    </div>
+
+    <div class="preview-card">
+      <div class="preview-pip">
+        <div class="preview-edge pip-state-hidden">
+          <div class="pip-figure">
+            <svg class="pip-svg" viewBox="0 0 120 170" width="96" height="136" role="img" aria-label="Pip, muted and hidden">
+              <defs>
+                <linearGradient id="steel-e" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#eef1f5"/><stop offset="0.45" stop-color="#bcc4cf"/><stop offset="0.55" stop-color="#8b96a3"/><stop offset="1" stop-color="#ccd3dc"/></linearGradient>
+                <linearGradient id="copper-e" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#eda978"/><stop offset="1" stop-color="#b26a33"/></linearGradient>
+              </defs>
+              <g class="pip-arms">
+                <g class="pip-arm pip-arm-left"><path d="M36 88 C28 92 22 98 18 106" fill="none" stroke="url(#steel-e)" stroke-width="4.5" stroke-linecap="round"/><circle cx="18" cy="106" r="3.2" fill="#8b96a3"/></g>
+                <g class="pip-arm pip-arm-right"><path d="M88 88 C96 92 102 98 106 106" fill="none" stroke="url(#steel-e)" stroke-width="4.5" stroke-linecap="round"/><circle cx="106" cy="106" r="3.2" fill="#8b96a3"/></g>
+              </g>
+              <path class="pip-wire" d="M86 30 C86 16 72 8 58 10 C40 13 32 28 33 48 L35 116 C36 136 50 148 66 146 C82 144 90 130 89 110 L86 62 C85 50 76 44 68 48 C60 52 60 66 61 84 L64 112 C65 122 74 126 79 119" fill="none" stroke="url(#steel-e)" stroke-width="8" stroke-linecap="round"/>
+              <path d="M61 84 L64 112 C65 122 74 126 79 119" fill="none" stroke="url(#copper-e)" stroke-width="8" stroke-linecap="round"/>
+              <g class="pip-eyes"><circle cx="44" cy="40" r="4.6" fill="#26292e"/><circle cx="58" cy="38" r="4.6" fill="#26292e"/><circle cx="42.4" cy="41.6" r="1.5" fill="#ffffff"/><circle cx="56.4" cy="39.6" r="1.5" fill="#ffffff"/></g>
+              <path class="pip-smile" d="M44 52 Q51 59 58 52" fill="none" stroke="#26292e" stroke-width="3" stroke-linecap="round"/>
+              <path class="pip-sweat" d="M84 22 c-4.5 6.5 -4.5 11 0 11 c4.5 0 4.5 -4.5 0 -11 z" fill="#7fb3d5"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <h2>Hidden (muted)</h2><p>Slides behind the page edge; only a wire tip shows.</p>
+    </div>
+  </section>
+
+  <section class="preview-interactive">
+    <h2>Try it — switch Pip&rsquo;s state</h2>
+    <div class="preview-demo-row">
+      <div id="demoDock" class="pip-dock pip-state-idle">
+        <div class="pip-bubble"><div id="demoBubbleText" class="pip-bubble-text">Hi — I&rsquo;m Pip. I used to pop up uninvited. I&rsquo;ve been in therapy since 2007.</div></div>
+        <div class="pip-figure">
+          <svg class="pip-svg" viewBox="0 0 120 170" width="96" height="136" role="img" aria-label="Pip, interactive demo">
+            <defs>
+              <linearGradient id="steel-f" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#eef1f5"/><stop offset="0.45" stop-color="#bcc4cf"/><stop offset="0.55" stop-color="#8b96a3"/><stop offset="1" stop-color="#ccd3dc"/></linearGradient>
+              <linearGradient id="copper-f" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#eda978"/><stop offset="1" stop-color="#b26a33"/></linearGradient>
+            </defs>
+            <g class="pip-arms">
+              <g class="pip-arm pip-arm-left"><path d="M36 88 C28 92 22 98 18 106" fill="none" stroke="url(#steel-f)" stroke-width="4.5" stroke-linecap="round"/><circle cx="18" cy="106" r="3.2" fill="#8b96a3"/></g>
+              <g class="pip-arm pip-arm-right"><path d="M88 88 C96 92 102 98 106 106" fill="none" stroke="url(#steel-f)" stroke-width="4.5" stroke-linecap="round"/><circle cx="106" cy="106" r="3.2" fill="#8b96a3"/></g>
+            </g>
+            <path class="pip-wire" d="M86 30 C86 16 72 8 58 10 C40 13 32 28 33 48 L35 116 C36 136 50 148 66 146 C82 144 90 130 89 110 L86 62 C85 50 76 44 68 48 C60 52 60 66 61 84 L64 112 C65 122 74 126 79 119" fill="none" stroke="url(#steel-f)" stroke-width="8" stroke-linecap="round"/>
+            <path d="M61 84 L64 112 C65 122 74 126 79 119" fill="none" stroke="url(#copper-f)" stroke-width="8" stroke-linecap="round"/>
+            <g class="pip-eyes"><circle cx="44" cy="40" r="4.6" fill="#26292e"/><circle cx="58" cy="38" r="4.6" fill="#26292e"/><circle cx="42.4" cy="41.6" r="1.5" fill="#ffffff"/><circle cx="56.4" cy="39.6" r="1.5" fill="#ffffff"/></g>
+            <path class="pip-smile" d="M44 52 Q51 59 58 52" fill="none" stroke="#26292e" stroke-width="3" stroke-linecap="round"/>
+            <path class="pip-sweat" d="M84 22 c-4.5 6.5 -4.5 11 0 11 c4.5 0 4.5 -4.5 0 -11 z" fill="#7fb3d5"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div class="preview-buttons">
+      <button type="button" data-demo-state="idle" data-demo-line="Hi — I&rsquo;m Pip. I used to pop up uninvited. I&rsquo;ve been in therapy since 2007.">Idle</button>
+      <button type="button" data-demo-state="thinking" data-demo-line="Working on it — give me a second.">Thinking</button>
+      <button type="button" data-demo-state="success" data-demo-line="Done — keep it or toss it?">Success</button>
+      <button type="button" data-demo-state="apologetic" data-demo-line="Sorry — the AI service didn&rsquo;t answer.">Apologetic</button>
+      <button type="button" data-demo-state="hidden" data-demo-line="">Muted (hidden)</button>
+    </div>
+    <p class="preview-note">Allen&rsquo;s eyeball check: is Pip charming, or creepy? If the character doesn&rsquo;t land, the fallback is 3 core states (idle, thinking, success) and a simpler figure — the editor never gets cut for the mascot.</p>
+  </section>
+</main>
+<script>
+  (function () {
+    var dock = document.getElementById('demoDock');
+    var bubble = document.getElementById('demoBubbleText');
+    document.querySelectorAll('[data-demo-state]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        dock.className = 'pip-dock pip-state-' + btn.getAttribute('data-demo-state');
+        bubble.textContent = btn.getAttribute('data-demo-line') || '';
+      });
+    });
+  })();
+</script>
+</body>
+</html>

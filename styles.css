@@ -1,0 +1,176 @@
+/* Clippy Reborn — styles. Vanilla CSS, zero dependencies.
+   Layout: header, toolbar, editor, action bar, diff panel, Pip dock.
+   Pip's animation states live here; state classes are applied to the
+   dock element (.pip-state-idle / thinking / success / apologetic / hidden). */
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: #222;
+  background: #f4f1ea;
+  line-height: 1.5;
+}
+
+.page { max-width: 920px; margin: 0 auto; padding: 20px 16px 120px; }
+
+/* ---------- Header ---------- */
+.app-header { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.app-header h1 { font-size: 26px; margin: 0; letter-spacing: -0.5px; }
+.app-header .tagline { color: #666; font-size: 14px; margin: 0; }
+.mute-btn {
+  margin-left: auto;
+  border: 1px solid #999; background: #fff; border-radius: 999px;
+  padding: 6px 14px; font-size: 13px; cursor: pointer;
+}
+.mute-btn:hover { background: #eee; }
+.mute-btn[aria-pressed="true"] { background: #333; color: #fff; border-color: #333; }
+
+/* ---------- Toolbar ---------- */
+.toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 16px 0 10px; }
+.toolbar button {
+  border: 1px solid #bbb; background: #fff; border-radius: 8px;
+  padding: 6px 12px; font-size: 13px; cursor: pointer;
+}
+.toolbar button:hover:not(:disabled) { background: #eee; }
+.toolbar button:disabled { opacity: 0.45; cursor: default; }
+.word-count { margin-left: auto; color: #777; font-size: 13px; }
+
+/* ---------- Editor ---------- */
+.editor-wrap { background: #fff; border: 1px solid #ddd; border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+.editor {
+  min-height: 340px;
+  padding: 20px 22px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 16px; line-height: 1.7;
+  white-space: pre-wrap;
+  outline: none;
+  border-radius: 12px;
+}
+.editor.large-text { font-size: 19px; }
+.editor:empty::before { content: attr(data-placeholder); color: #aaa; }
+
+/* ---------- Action bar ---------- */
+.action-bar { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0 0; align-items: center; }
+.action-bar .action-group { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.action-bar .action-label { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 0.06em; }
+.action-btn {
+  border: 1px solid #8a6d3b; background: #fff8e6; border-radius: 999px;
+  padding: 7px 14px; font-size: 13px; cursor: pointer;
+}
+.action-btn:hover:not(:disabled) { background: #ffefc4; }
+.action-btn:disabled { opacity: 0.45; cursor: default; }
+.action-btn.primary { background: #2f6f4f; color: #fff; border-color: #2f6f4f; }
+.action-btn.primary:hover:not(:disabled) { background: #255a40; }
+
+.draft-row { display: flex; gap: 8px; margin-top: 10px; }
+.draft-row[hidden] { display: none; }
+.draft-row input {
+  flex: 1; border: 1px solid #bbb; border-radius: 8px; padding: 8px 10px; font-size: 14px;
+}
+
+/* ---------- Diff / result panel ---------- */
+.diff-panel { margin-top: 16px; background: #fff; border: 1px solid #ddd; border-radius: 12px; padding: 16px; }
+.diff-panel[hidden] { display: none; }
+.diff-panel h2 { font-size: 14px; margin: 0 0 8px; }
+.diff-body { font-family: Georgia, "Times New Roman", serif; font-size: 15px; line-height: 1.7; white-space: pre-wrap; }
+.diff-del { background: #fbd9d3; color: #8a2f24; text-decoration: line-through; border-radius: 3px; padding: 0 2px; }
+.diff-ins { background: #cdeeda; color: #1d5c33; border-radius: 3px; padding: 0 2px; }
+.note-body { font-size: 15px; line-height: 1.7; white-space: pre-wrap; }
+.diff-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.diff-actions button { border: 1px solid #999; background: #fff; border-radius: 8px; padding: 7px 14px; font-size: 13px; cursor: pointer; }
+.diff-actions button:hover { background: #eee; }
+.diff-actions .accept { background: #2f6f4f; color: #fff; border-color: #2f6f4f; }
+.diff-actions .accept:hover { background: #255a40; }
+.diff-note { color: #666; font-size: 13px; margin: 8px 0 0; }
+
+/* ---------- Manners line / footer ---------- */
+.manners-line { margin-top: 14px; font-size: 13px; color: #777; }
+.app-footer { margin-top: 28px; font-size: 12px; color: #999; line-height: 1.6; }
+
+/* ---------- Pip dock ---------- */
+.pip-dock {
+  position: fixed; right: 16px; bottom: 16px; z-index: 20;
+  display: flex; align-items: flex-end; gap: 10px;
+  cursor: default;
+}
+.pip-bubble {
+  position: relative;
+  max-width: 260px;
+  background: #fff; border: 1px solid #d8d2c4; border-radius: 14px;
+  padding: 10px 12px; font-size: 14px; line-height: 1.5;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+  margin-bottom: 90px;
+}
+.pip-bubble::after {
+  content: ""; position: absolute; right: -8px; bottom: 18px;
+  border: 8px solid transparent; border-left-color: #fff;
+  border-right: 0;
+}
+.pip-bubble-text { white-space: pre-wrap; }
+.pip-bubble-actions { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.pip-bubble-actions[hidden] { display: none; }
+.pip-bubble-actions button {
+  border: 1px solid #8a6d3b; background: #fff8e6; border-radius: 999px;
+  padding: 4px 10px; font-size: 12px; cursor: pointer;
+}
+.pip-bubble-actions button:hover { background: #ffefc4; }
+.pip-bubble-actions .quiet { border-color: #bbb; background: #fff; }
+.pip-figure { flex: none; line-height: 0; }
+.pip-svg { display: block; }
+
+/* Pip states (applied to the dock / any .pip-state-* container) */
+.pip-state-idle .pip-svg { animation: pip-bob 3s ease-in-out infinite; transform-origin: 60px 150px; }
+.pip-state-thinking .pip-svg { animation: pip-wiggle 0.55s ease-in-out infinite; transform-origin: 60px 150px; }
+.pip-state-success .pip-svg { animation: pip-cheer 0.7s ease; transform-origin: 60px 150px; }
+.pip-state-apologetic .pip-svg { transform: rotate(6deg) translateY(5px); transform-origin: 60px 150px; }
+.pip-smile { opacity: 0; transition: opacity 0.25s ease; }
+.pip-state-success .pip-smile { opacity: 1; }
+.pip-sweat { opacity: 0; transition: opacity 0.25s ease; }
+.pip-state-apologetic .pip-sweat { opacity: 1; }
+.pip-state-hidden .pip-bubble { display: none; }
+.pip-state-hidden .pip-figure { transform: translateX(80%); transition: transform 0.4s ease; }
+.pip-state-hidden { cursor: pointer; }
+.pip-arm { transition: transform 0.3s ease; transform-box: view-box; }
+.pip-arm-left { transform-origin: 36px 88px; }
+.pip-arm-right { transform-origin: 88px 88px; }
+.pip-state-idle .pip-arm-right { animation: pip-wave 3s ease-in-out infinite; }
+.pip-gesture-point .pip-arm-left { transform: rotate(-28deg); }
+.pip-gesture-cheer .pip-arm-right { transform: rotate(-75deg); }
+
+@keyframes pip-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+@keyframes pip-wiggle {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+@keyframes pip-cheer {
+  0% { transform: translateY(0) rotate(0); }
+  40% { transform: translateY(-12px) rotate(8deg); }
+  100% { transform: translateY(0) rotate(0); }
+}
+@keyframes pip-wave {
+  0%, 70%, 100% { transform: rotate(0); }
+  80% { transform: rotate(-10deg); }
+  90% { transform: rotate(4deg); }
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .pip-svg, .pip-arm { animation: none !important; }
+  .pip-state-apologetic .pip-svg { transform: none; }
+  .pip-state-hidden .pip-figure { transition: none; }
+}
+
+/* ---------- Small screens ---------- */
+@media (max-width: 640px) {
+  .page { padding-bottom: 170px; }
+  .pip-dock { right: 8px; bottom: 8px; }
+  .pip-bubble { max-width: 200px; margin-bottom: 70px; font-size: 13px; }
+  .pip-svg { width: 72px; height: 102px; }
+  .editor { min-height: 280px; font-size: 15px; }
+  .mute-btn { margin-left: 0; }
+}

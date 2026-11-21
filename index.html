@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Clippy Reborn — Pip, the paperclip who learned manners</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Clippy is back as Pip — an AI writing assistant that actually edits your text, and knows when to shut up. Free, no login, nothing leaves your browser except the text you ask about.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="page">
+  <header class="app-header">
+    <h1>Clippy Reborn</h1>
+    <p class="tagline">Pip — the paperclip who learned manners.</p>
+    <button id="muteBtn" class="mute-btn" type="button" aria-pressed="false" title="Mute Pip — he hides behind the page edge and stops suggesting">Shh, Pip</button>
+  </header>
+
+  <div class="toolbar">
+    <button id="newBtn" type="button" title="Start a blank document (current text is kept for one Undo)">New</button>
+    <button id="clearBtn" type="button" title="Clear the document (kept for one Undo)">Clear</button>
+    <button id="undoBtn" type="button" title="Undo the last accepted edit, New, or Clear" disabled>Undo</button>
+    <button id="fontBtn" type="button" title="Toggle larger editor text">A+ text</button>
+    <span id="wordCount" class="word-count">0 words</span>
+  </div>
+
+  <div class="editor-wrap">
+    <div id="editor" class="editor" contenteditable="true" spellcheck="false"
+         data-placeholder="Start writing — or ask Pip for help."
+         aria-label="Writing editor"></div>
+  </div>
+
+  <div class="action-bar" role="group" aria-label="Ask Pip">
+    <span class="action-label">Ask Pip</span>
+    <div class="action-group">
+      <button class="action-btn" type="button" data-action="summarize" title="Summarize the selection (or the whole document)">Summarize</button>
+      <button class="action-btn" type="button" data-action="rewrite-shorter" title="Rewrite the selection shorter and tighter">Shorter</button>
+      <button class="action-btn" type="button" data-action="rewrite-formal" title="Rewrite the selection in a formal tone">Formal</button>
+      <button class="action-btn" type="button" data-action="rewrite-friendly" title="Rewrite the selection in a warm, friendly tone">Friendly</button>
+      <button class="action-btn" type="button" data-action="fix-grammar" title="Fix grammar, spelling, and punctuation">Fix grammar</button>
+      <button class="action-btn" type="button" data-action="continue" title="Continue writing from the paragraph at the cursor">Continue writing</button>
+      <button class="action-btn" type="button" data-action="draft" title="Draft new text from a short prompt">Draft from prompt</button>
+      <button class="action-btn" type="button" data-action="explain" title="Explain the selection in plain language">Explain selection</button>
+    </div>
+  </div>
+
+  <div id="draftRow" class="draft-row" hidden>
+    <input id="draftPrompt" type="text" placeholder="What should Pip draft? e.g. a thank-you note to my interviewer" aria-label="Draft prompt">
+    <button id="draftGo" class="action-btn primary" type="button">Draft it</button>
+  </div>
+
+  <section id="diffPanel" class="diff-panel" hidden aria-live="polite">
+    <h2 id="diffTitle">Pip suggests</h2>
+    <div id="diffBody" class="diff-body"></div>
+    <div id="noteBody" class="note-body" hidden></div>
+    <div class="diff-actions">
+      <button id="diffAccept" class="accept" type="button">Accept</button>
+      <button id="diffDiscard" type="button">Discard</button>
+      <button id="noteCopy" type="button" hidden>Copy</button>
+      <button id="noteInsert" type="button" hidden>Insert at end</button>
+      <button id="diffRetry" type="button" hidden>Try again</button>
+      <button id="diffOffline" type="button" hidden>Use the offline version</button>
+    </div>
+    <p id="diffNote" class="diff-note" hidden></p>
+  </section>
+
+  <p id="mannersLine" class="manners-line">Pip asks first · one suggestion per session: unused · Muted: no</p>
+
+  <footer class="app-footer">
+    <p>Free forever: no account, no payment, no backend. Your document stays in this browser (localStorage). Pip only sends the text you select to the free AI service — never the whole document — and never applies an edit without you accepting it.</p>
+    <p>Pip is an original character. He is not Microsoft&rsquo;s Clippy, and this project is not affiliated with Microsoft.</p>
+  </footer>
+</div>
+
+<div id="pipDock" class="pip-dock pip-state-idle" title="Pip, your writing assistant">
+  <div id="pipBubble" class="pip-bubble" role="status">
+    <div id="pipBubbleText" class="pip-bubble-text">Hi — I&rsquo;m Pip. I know, I used to pop up uninvited. I&rsquo;ve been in therapy since 2007.</div>
+    <div id="pipBubbleActions" class="pip-bubble-actions" hidden></div>
+  </div>
+  <div class="pip-figure">
+    <svg class="pip-svg" viewBox="0 0 120 170" width="96" height="136" role="img" aria-label="Pip, the paperclip assistant">
+      <defs>
+        <linearGradient id="steel" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#eef1f5"/><stop offset="0.45" stop-color="#bcc4cf"/><stop offset="0.55" stop-color="#8b96a3"/><stop offset="1" stop-color="#ccd3dc"/></linearGradient>
+        <linearGradient id="copper" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#eda978"/><stop offset="1" stop-color="#b26a33"/></linearGradient>
+      </defs>
+      <g class="pip-arms">
+        <g class="pip-arm pip-arm-left"><path d="M36 88 C28 92 22 98 18 106" fill="none" stroke="url(#steel)" stroke-width="4.5" stroke-linecap="round"/><circle cx="18" cy="106" r="3.2" fill="#8b96a3"/></g>
+        <g class="pip-arm pip-arm-right"><path d="M88 88 C96 92 102 98 106 106" fill="none" stroke="url(#steel)" stroke-width="4.5" stroke-linecap="round"/><circle cx="106" cy="106" r="3.2" fill="#8b96a3"/></g>
+      </g>
+      <path class="pip-wire" d="M86 30 C86 16 72 8 58 10 C40 13 32 28 33 48 L35 116 C36 136 50 148 66 146 C82 144 90 130 89 110 L86 62 C85 50 76 44 68 48 C60 52 60 66 61 84 L64 112 C65 122 74 126 79 119" fill="none" stroke="url(#steel)" stroke-width="8" stroke-linecap="round"/>
+      <path d="M61 84 L64 112 C65 122 74 126 79 119" fill="none" stroke="url(#copper)" stroke-width="8" stroke-linecap="round"/>
+      <g class="pip-eyes"><circle cx="44" cy="40" r="4.6" fill="#26292e"/><circle cx="58" cy="38" r="4.6" fill="#26292e"/><circle cx="42.4" cy="41.6" r="1.5" fill="#ffffff"/><circle cx="56.4" cy="39.6" r="1.5" fill="#ffffff"/></g>
+      <path class="pip-smile" d="M44 52 Q51 59 58 52" fill="none" stroke="#26292e" stroke-width="3" stroke-linecap="round"/>
+      <path class="pip-sweat" d="M84 22 c-4.5 6.5 -4.5 11 0 11 c4.5 0 4.5 -4.5 0 -11 z" fill="#7fb3d5"/>
+    </svg>
+  </div>
+</div>
+
+<script src="lib.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
