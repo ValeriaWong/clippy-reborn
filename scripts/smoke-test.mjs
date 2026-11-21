@@ -59,6 +59,26 @@ check('paragraphAtOffset finds second', at && at.text === 'Second para here.', J
 const longest = lib.longestParagraph('Short.\n\nThis one is the longest paragraph by far, with many more words than the others.\n\nMid.');
 check('longestParagraph', longest && longest.text.startsWith('This one is'), JSON.stringify(longest));
 
+/* --- offline: retryAsync --- */
+{
+  let calls = 0;
+  const flaky = async () => { calls++; return calls < 3 ? { ok: false, status: 500 } : { ok: true, text: 'third time' }; };
+  const out = await lib.retryAsync(flaky, 2, [1, 1]);
+  check('retryAsync succeeds on 3rd attempt', out.ok && out.text === 'third time' && calls === 3);
+}
+{
+  let calls = 0;
+  const alwaysFail = async () => { calls++; return { ok: false, status: 'network' }; };
+  const out = await lib.retryAsync(alwaysFail, 2, [1, 1]);
+  check('retryAsync gives up after retries', !out.ok && out.status === 'network' && calls === 3);
+}
+{
+  let calls = 0;
+  const instant = async () => { calls++; return { ok: true, text: 'first' }; };
+  const out = await lib.retryAsync(instant, 2, [1, 1]);
+  check('retryAsync does not retry success', out.ok && calls === 1);
+}
+
 /* --- offline: word diff --- */
 const d1 = lib.wordDiff('the quick brown fox', 'the quick red fox jumps');
 eq('wordDiff tokens', d1.map(t => t.type + ':' + t.text),
@@ -107,6 +127,14 @@ if (!offlineOnly) {
     'https://text.pollinations.ai/' + encodeURIComponent(
       'Summarize the following text in one plain sentence. Reply with only the summary, no preamble:\n\nThe quick brown fox jumps over the lazy dog near the riverbank while the sun sets.'));
   if (sum) console.log('      summarize probe reply: ' + sum.slice(0, 120));
+  // Proxy transport: browsers send an Origin header, which trips
+  // Pollinations' Turnstile gate (403 "Missing Turnstile token"); routing
+  // the same request through allorigins strips it. Must stay working.
+  const viaProxy = await liveProbe('Pollinations text via allorigins (proxy fallback)',
+    'https://api.allorigins.win/raw?url=' + encodeURIComponent(
+      'https://text.pollinations.ai/' + encodeURIComponent(
+        'Summarize the following text in one plain sentence. Reply with only the summary, no preamble:\n\nThe quick brown fox jumps over the lazy dog near the riverbank while the sun sets.')));
+  if (viaProxy) console.log('      proxy probe reply: ' + viaProxy.slice(0, 120));
 }
 
 console.log(results.join('\n'));

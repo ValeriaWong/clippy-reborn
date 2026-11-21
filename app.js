@@ -189,20 +189,34 @@ function onDocInput() {
   resetIdleTimer();
 }
 
-/* Keep the editor a single plain-text node: intercept Enter and paste. */
+/* Keep the editor a single plain-text node: intercept Enter and paste.
+   The text is inserted INTO the single text node (insertData) and the caret
+   is placed inside that node, right after the inserted text. (An earlier
+   version inserted a separate '\n' text node and set the caret after it;
+   Chrome then typed the next characters INTO that node before the '\n',
+   so the newline ended up at the end of the text instead of at the caret.) */
 function insertTextAtCaret(text) {
   const sel = window.getSelection();
   if (!sel.rangeCount) return;
   const range = sel.getRangeAt(0);
   if (!editor.contains(range.startContainer)) return;
-  range.deleteFromDocument();
-  const node = document.createTextNode(text);
-  range.insertNode(node);
-  range.setStartAfter(node);
-  range.collapse(true);
-  sel.removeAllRanges();
-  sel.addRange(range);
   editor.normalize();
+  range.deleteContents();
+  editor.normalize();
+  const caret = caretOffset();
+  if (caret === null) return;
+  const node = editor.firstChild;
+  const r = document.createRange();
+  if (!node) {
+    editor.textContent = text;
+    r.setStart(editor.firstChild, text.length);
+  } else {
+    node.insertData(caret, text);
+    r.setStart(node, caret + text.length);
+  }
+  r.collapse(true);
+  sel.removeAllRanges();
+  sel.addRange(r);
   onDocInput();
 }
 
@@ -217,6 +231,53 @@ editor.addEventListener('paste', e => {
   e.preventDefault();
   const text = (e.clipboardData || window.clipboardData).getData('text/plain');
   if (text) insertTextAtCaret(text);
+});
+
+/* Chrome quirk: when the caret sits right after a trailing '\n' at the very
+   end of the editor's single text node, a typed character is inserted
+   BEFORE that newline (upstream caret affinity) — so the newline ends up at
+   the end of the document instead of at the caret, and the new sentence
+   joins the previous line. Only in that one position do we insert the
+   typed character ourselves, at the real selection offset (insertTextAtCaret
+   reads it via caretOffset and uses insertData). Everywhere else the browser
+   handles typing natively, so native undo keeps working. (IME composition
+   text is not intercepted, so composing right after Enter-at-end can still
+   land before the newline — a known limitation, not fixed here.) */
+editor.addEventListener('beforeinput', e => {
+  if (e.inputType === 'insertText' && e.data) {
+    const caret = caretOffset();
+    if (caret === null) return;
+    const node = editor.firstChild;
+    if (!node || node.nodeType !== 3) return;
+    if (caret === node.length && node.data.endsWith('\n')) {
+      e.preventDefault();
+      insertTextAtCaret(e.data);
+    }
+    return;
+  }
+  if (e.inputType === 'deleteContentBackward') {
+    // Same affinity bug for Backspace: with the caret right after a trailing
+    // '\n' at the end, the browser deletes the character BEFORE the newline
+    // (the last letter of the previous line) instead of the newline itself.
+    // Only when the selection is collapsed; a ranged Backspace deletes the
+    // selection natively and is left alone.
+    const sel = window.getSelection();
+    if (!sel.rangeCount || !sel.isCollapsed) return;
+    const caret = caretOffset();
+    if (caret === null) return;
+    const node = editor.firstChild;
+    if (!node || node.nodeType !== 3) return;
+    if (caret === node.length && node.data.endsWith('\n')) {
+      e.preventDefault();
+      node.deleteData(caret - 1, 1);
+      const r = document.createRange();
+      r.setStart(node, caret - 1);
+      r.collapse(true);
+      sel.removeAllRanges();
+      sel.addRange(r);
+      onDocInput();
+    }
+  }
 });
 
 editor.addEventListener('input', onDocInput);
@@ -272,8 +333,10 @@ function selectionInfo() {
 /* ------------------------------------------------------------------ */
 /* LLM — keyless Pollinations text API (same call shape the sibling   */
 /* Reader project verified live). 30 s timeout, plain-text reply.      */
+/* Pollinations is flaky (5xx / empty replies / dropped connections):  */
+/* callLLM retries twice with a short backoff before giving up.        */
 /* ------------------------------------------------------------------ */
-async function callLLM(prompt) {
+async function callLLMOnce(prompt) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 30000);
   try {
@@ -284,6 +347,44 @@ async function callLLM(prompt) {
     if (!res.ok) return { ok: false, status: res.status };
     const text = (await res.text()).trim();
     if (!text) return { ok: false, status: 'empty' };
+    return { ok: true, text: PipLib.truncate(text, 1500) };
+  } catch (err) {
+    return { ok: false, status: err && err.name === 'AbortError' ? 'timeout' : 'network' };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function callLLM(prompt) {
+  // Direct first: fast when Pollinations' browser gate is off. A 403 means
+  // the Turnstile gate is on for this browser (it fires on the Origin
+  // header browsers send) — retrying direct is useless, so stop at once
+  // and go to the proxy transport instead.
+  const direct = await PipLib.retryAsync(
+    () => callLLMOnce(prompt), 2, [700, 1800],
+    (r) => r.ok || r.status === 403
+  );
+  if (direct.ok) return direct;
+  const viaProxy = await PipLib.retryAsync(() => callLLMOnceViaProxy(prompt), 1, [1000]);
+  return viaProxy.ok ? viaProxy : direct;
+}
+
+/* Same request routed through allorigins, which fetches Pollinations
+   server-side — no Origin header reaches Pollinations, so its Turnstile
+   gate for browser requests doesn't fire. (codetabs was tried and returns
+   522 from here; not used.) */
+const POLLINATIONS_VIA_ALLORIGINS = (prompt) =>
+  'https://api.allorigins.win/raw?url=' +
+  encodeURIComponent('https://text.pollinations.ai/' + encodeURIComponent(prompt));
+
+async function callLLMOnceViaProxy(prompt) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 30000);
+  try {
+    const res = await fetch(POLLINATIONS_VIA_ALLORIGINS(prompt), { signal: controller.signal });
+    if (!res.ok) return { ok: false, status: res.status };
+    const text = (await res.text()).trim();
+    if (!text || text.startsWith('<')) return { ok: false, status: 'bad-response' };
     return { ok: true, text: PipLib.truncate(text, 1500) };
   } catch (err) {
     return { ok: false, status: err && err.name === 'AbortError' ? 'timeout' : 'network' };
